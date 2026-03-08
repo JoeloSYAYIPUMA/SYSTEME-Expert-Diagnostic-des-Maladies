@@ -1,7 +1,4 @@
-﻿"""
-Application Flask pour le systeme expert agricole
-Interface web pour interagir avec le systeme
-"""
+
 
 import os
 import uuid
