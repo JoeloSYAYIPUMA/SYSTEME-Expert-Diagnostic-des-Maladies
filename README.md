@@ -62,35 +62,5 @@ http://localhost:5000
     └── sessions/
 ```
 
-## Personnalisation
 
-### Ajouter une nouvelle regle
-Dans `knowledge_base.py`:
-```python
-{
-    'id': 'R013',
-    'name': 'Nouvelle maladie',
-    'conditions': {
-        'plante': 'tomate',
-        'couleur_taches': 'violet'
-    },
-    'actions': [
-        {'type': 'diagnostic', 'maladie': 'NouvelleMaladie', 'probabilite': 0.9},
-        {'type': 'traitement', 'recommandation': 'Traitement specifique'}
-    ]
-}
-```
 
-## Ameliorations possibles
-
-- [ ] Integration d'un modele de Deep Learning (CNN)
-- [ ] API meteo en temps reel
-- [ ] Base de donnees pour historique
-- [ ] Application mobile
-- [ ] Multilingue
-
-## Licence
-MIT License
-
-## Contribution
-Les contributions sont les bienvenues.
