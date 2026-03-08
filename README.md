@@ -1,5 +1,10 @@
 ﻿# Systeme Expert Agricole - Diagnostic des Maladies des Plantes
 
+ ## LISTE DES PARTICIPANTS
+ KAMBALE SYAYIPUMA JOEL
+ ELOGE MUYISA MUMBERE
+ KAVUGHO VOLONTE VITAL
+
 ## Description
 Systeme expert base sur des regles pour le diagnostic precoce des maladies des plantes, avec analyse d'images, recommandations de traitement et alertes epidemiologiques.
 
