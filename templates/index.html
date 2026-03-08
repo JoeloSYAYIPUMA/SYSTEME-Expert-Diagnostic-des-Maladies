@@ -1,0 +1,526 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systeme Expert Agricole - Diagnostic des Maladies des Plantes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #81c784;
+            --accent-color: #ff8f00;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1rem 1.5rem;
+            font-weight: bold;
+        }
+
+        .card-header i {
+            margin-right: 10px;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--secondary-color);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            background: var(--bg-light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: #e8f5e9;
+        }
+
+        .upload-area i {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .question-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .option-btn {
+            margin: 5px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 25px;
+            background: white;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover, .option-btn.selected {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .progress-bar-custom {
+            height: 10px;
+            border-radius: 5px;
+            background: var(--secondary-color);
+            transition: width 0.3s;
+        }
+
+        .diagnostic-result {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .alert-card {
+            border-left: 5px solid var(--accent-color);
+            background: #fff3e0;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .treatment-card {
+            background: #e8f5e8;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 10px 0;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feature-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+
+        .meteo-alert {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="fas fa-leaf"></i> AgriExpert - Diagnostic des Maladies
+            </span>
+            <div class="text-white">
+                <i class="fas fa-thermometer-half"></i> Meteo integree
+                <i class="fas fa-chart-line ms-3"></i> Alertes epidemio
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <div class="card" id="welcome-card">
+            <div class="card-header">
+                <i class="fas fa-seedling"></i> Bienvenue sur AgriExpert
+            </div>
+            <div class="card-body text-center">
+                <i class="fas fa-leaf" style="font-size: 4rem; color: var(--primary-color);"></i>
+                <h3 class="mt-3">Systeme Expert de Diagnostic des Maladies des Plantes</h3>
+                <p class="text-muted">
+                    Telechargez une photo de votre plante malade et repondez a quelques questions<br>
+                    pour obtenir un diagnostic precis et des recommandations de traitement.
+                </p>
+                <button class="btn btn-success btn-lg mt-3" onclick="startDiagnosis()">
+                    <i class="fas fa-play"></i> Commencer le diagnostic
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="diagnosis-card" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-stethoscope"></i> Diagnostic en cours
+            </div>
+            <div class="card-body">
+                <div class="progress mb-4" style="height: 10px;">
+                    <div class="progress-bar progress-bar-custom" id="progress-bar" style="width: 0%;"></div>
+                </div>
+
+                <div id="upload-section">
+                    <h5>1. Telechargez une photo de la plante malade</h5>
+                    <div class="upload-area" onclick="document.getElementById('file-input').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Cliquez ou glissez-deposez une photo ici</p>
+                        <p class="small text-muted">Formats supportes: JPG, PNG, GIF</p>
+                        <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
+                    </div>
+                    <div id="image-preview" class="text-center"></div>
+                    <div id="image-analysis" class="mt-3"></div>
+                </div>
+
+                <div id="questions-section" style="display: none;">
+                    <h5>2. Repondez aux questions pour affiner le diagnostic</h5>
+                    <div id="current-question" class="question-container mt-3"></div>
+                </div>
+
+                <div id="loader" class="text-center" style="display: none;">
+                    <div class="loader"></div>
+                    <p>Analyse en cours...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="results-card" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-clipboard-check"></i> Resultats du diagnostic
+            </div>
+            <div class="card-body" id="results-content"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 0;
+
+        function startDiagnosis() {
+            document.getElementById('welcome-card').style.display = 'none';
+            document.getElementById('diagnosis-card').style.display = 'block';
+            updateProgress(10);
+
+            fetch('/start_diagnosis', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log('Session demarree');
+                }
+            });
+        }
+
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    document.getElementById('image-preview').innerHTML =
+                        `<img src="${e.target.result}" class="preview-image" alt="Preview">`;
+
+                    document.getElementById('loader').style.display = 'block';
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    fetch('/upload_image', { method: 'POST', body: formData })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('loader').style.display = 'none';
+
+                        if (data.status === 'success') {
+                            document.getElementById('image-analysis').innerHTML = `
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-check-circle"></i> Analyse de l'image terminee</h6>
+                                    <div>
+                                        <span class="feature-badge"><i class="fas fa-palette"></i> Couleur: ${data.features.couleur || 'Non detectee'}</span>
+                                        <span class="feature-badge"><i class="fas fa-shapes"></i> Forme: ${data.features.forme || 'Non detectee'}</span>
+                                        <span class="feature-badge"><i class="fas fa-grip-lines"></i> Texture: ${data.features.texture || 'Non detectee'}</span>
+                                        <span class="feature-badge"><i class="fas fa-exclamation-triangle"></i> Severite: ${data.features.severite}</span>
+                                    </div>
+                                </div>
+                            `;
+
+                            updateProgress(30);
+                            loadNextQuestion();
+                        } else {
+                            alert("Erreur lors de l'analyse de l'image");
+                        }
+                    });
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function loadNextQuestion() {
+            fetch('/get_next_question')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        displayQuestion(data.question);
+                        document.getElementById('upload-section').style.display = 'none';
+                        document.getElementById('questions-section').style.display = 'block';
+                    } else if (data.status === 'complete') {
+                        runDiagnosis();
+                    }
+                });
+        }
+
+        function displayQuestion(question) {
+            let html = `<h5>${question.question}</h5><div class="mt-3">`;
+
+            question.options.forEach(option => {
+                let displayValue = option;
+                if (typeof option === 'boolean') {
+                    displayValue = option ? 'Oui' : 'Non';
+                } else {
+                    displayValue = option.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                }
+
+                html += `<button class="option-btn" onclick="selectOption('${question.id}', '${option}', event)">${displayValue}</button>`;
+            });
+
+            html += `</div>`;
+            document.getElementById('current-question').innerHTML = html;
+        }
+
+        function selectOption(questionId, value, evt) {
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            evt.target.classList.add('selected');
+
+            fetch('/submit_answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question_id: questionId, response: value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    currentStep++;
+                    let progress = 30 + (currentStep * 5);
+                    if (progress > 80) progress = 80;
+                    updateProgress(progress);
+                    setTimeout(loadNextQuestion, 500);
+                }
+            });
+        }
+
+        function runDiagnosis() {
+            updateProgress(90);
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('questions-section').style.display = 'none';
+
+            fetch('/run_diagnosis', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loader').style.display = 'none';
+
+                if (data.status === 'success') {
+                    updateProgress(100);
+                    displayResults(data.report);
+                    document.getElementById('diagnosis-card').style.display = 'none';
+                    document.getElementById('results-card').style.display = 'block';
+                }
+            });
+        }
+
+        function displayResults(report) {
+            let html = '';
+
+            if (report.resume.diagnostic_principal) {
+                html += `
+                    <div class="alert alert-success">
+                        <h4><i class="fas fa-check-circle"></i> Diagnostic: ${report.resume.diagnostic_principal}</h4>
+                        <p>Confiance: ${report.resume.confiance}</p>
+                        <p class="mb-0"><strong>Traitement recommande:</strong> ${report.resume.traitement_recommande || 'N/A'}</p>
+                    </div>
+                `;
+            }
+
+            if (report.alertes && report.alertes.length > 0) {
+                html += '<h5 class="mt-4"><i class="fas fa-exclamation-triangle text-warning"></i> Alertes</h5>';
+                report.alertes.forEach(alerte => {
+                    html += `
+                        <div class="meteo-alert">
+                            <i class="fas fa-bell"></i> ${alerte.message}
+                            ${alerte.action_preventive ? `<br><small>Action: ${alerte.action_preventive}</small>` : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            if (report.diagnostics && report.diagnostics.length > 0) {
+                html += '<h5 class="mt-4"><i class="fas fa-stethoscope"></i> Diagnostics</h5>';
+                report.diagnostics.forEach(diag => {
+                    html += `
+                        <div class="alert-card mb-2">
+                            <strong>${diag.maladie}</strong> - Probabilite: ${(diag.probabilite * 100).toFixed(0)}%
+                        </div>
+                    `;
+                });
+            }
+
+            if (report.traitements && report.traitements.length > 0) {
+                html += '<h5 class="mt-4"><i class="fas fa-pills"></i> Traitements recommandes</h5>';
+                report.traitements.forEach(traitement => {
+                    html += `
+                        <div class="treatment-card">
+                            <strong>${traitement.maladie || 'Recommandation'}:</strong><br>
+                            ${traitement.recommandation || traitement.message}
+                        </div>
+                    `;
+                });
+            }
+
+            if (report.conseils && report.conseils.length > 0) {
+                html += '<h5 class="mt-4"><i class="fas fa-lightbulb"></i> Conseils</h5>';
+                report.conseils.forEach(conseil => {
+                    html += `
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> ${conseil.message}
+                        </div>
+                    `;
+                });
+            }
+
+            if (report.informations && report.informations.length > 0) {
+                html += '<h5 class="mt-4"><i class="fas fa-book"></i> Informations complementaires</h5>';
+                report.informations.forEach(info => {
+                    html += `
+                        <div class="card mt-2">
+                            <div class="card-body">
+                                <h6>${info.details.nom}</h6>
+                                <p><strong>Description:</strong> ${info.details.description}</p>
+                                <p><strong>Symptomes:</strong> ${info.details.symptomes}</p>
+                                <p><strong>Plantes hotes:</strong> ${info.details.plantes_hotes.join(', ')}</p>
+                                <p><strong>Prevention:</strong> ${info.details.prevention}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            html += `
+                <div class="mt-4">
+                    <button class="btn btn-outline-secondary" onclick="toggleExplanation()">
+                        <i class="fas fa-cog"></i> Voir le raisonnement du systeme
+                    </button>
+                    <div id="explanation" style="display: none;" class="mt-3 p-3 bg-light rounded">
+                        <pre>${report.explication}</pre>
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="mt-4 text-center">
+                    <button class="btn btn-success" onclick="newDiagnosis()">
+                        <i class="fas fa-redo"></i> Nouveau diagnostic
+                    </button>
+                    <button class="btn btn-primary ms-2" onclick="saveReport()">
+                        <i class="fas fa-save"></i> Sauvegarder
+                    </button>
+                    <button class="btn btn-info ms-2" onclick="printReport()">
+                        <i class="fas fa-print"></i> Imprimer
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('results-content').innerHTML = html;
+        }
+
+        function toggleExplanation() {
+            const explanation = document.getElementById('explanation');
+            explanation.style.display = explanation.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progress-bar').style.width = percent + '%';
+        }
+
+        function newDiagnosis() {
+            fetch('/reset_session', { method: 'POST' }).then(() => window.location.reload());
+        }
+
+        function saveReport() {
+            const filename = prompt("Nom du fichier pour sauvegarder la session:", "session_agricole");
+            if (filename) {
+                fetch('/save_session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({filename: filename})
+                })
+                .then(response => response.json())
+                .then(data => alert(data.message));
+            }
+        }
+
+        function printReport() {
+            window.print();
+        }
+    </script>
+
+    <div class="footer">
+        <p>Systeme Expert Agricole v1.0 - Diagnostic intelligent des maladies des plantes</p>
+        <p class="small">© 2026 JOELO SYAYIPUMA - Tous droits reserves</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+﻿__pycache__/
+*.py[cod]
+*.log
+.vscode/
+.env
+.venv/
+static/uploads/*
+!static/uploads/.gitkeep
+static/sessions/*
+!static/sessions/.gitkeep
