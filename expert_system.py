@@ -1,7 +1,4 @@
-﻿"""
-Interface principale du systeme expert agricole
-Gere l'interaction avec l'utilisateur et l'orchestration des composants
-"""
+
 
 import json
 from knowledge_base import KnowledgeBase
